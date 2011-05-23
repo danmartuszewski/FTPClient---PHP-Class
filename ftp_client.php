@@ -11,7 +11,7 @@
 class FTPClient {
 
 
-    function __construct() {
+    public function __construct() {
         
         
     }
