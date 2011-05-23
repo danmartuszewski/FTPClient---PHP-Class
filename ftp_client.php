@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * FTPClient class is a imlementation of FTP protocol
  * for simple use in PHP scripts
@@ -10,8 +9,13 @@
  * 
  */
 class FTPClient {
-    
-    
+
+
+    function __construct() {
+        
+        
+    }
+
 }
 
 ?>
