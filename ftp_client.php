@@ -1,12 +1,10 @@
 <?php
 
-require_once('FirePHPCore/fb.php');
-
 /**
  * FTPClient class is a imlementation of FTP protocol
  * for simple use in PHP scripts
  * 
- * @author Daniel Martuszewski <daniel10a at o2.pl>
+ * @author Daniel Martuszewski <daniel10a@o2.pl>
  * @filesource ftp_client.php
  * 
  */
@@ -98,38 +96,83 @@ class FTPClient {
      */
     public $localization = array(
         'eng' => array(
-            'failedConnection'  => 'FTP connection has failed!',
-            'failedLogin'       => 'Failed login to %s for user %s!',
-            'successLogin'      => 'Connected to %s for user %s',
-            'fileNotExists'     => 'File %s does not exist.',
-            'successUpload'     => 'File %s uploaded as %s',
-            'failedUpload'      => 'Failed uploading file "%s"!',
-            'successMkdir'      => 'Directory %s created',
-            'failedMkdir'       => 'Failed creating directory "%s"!',
-            'currentDir'        => 'Current directory %s',
+            'failedConnection' => 'FTP connection has failed!',
+            'failedLogin' => 'Failed login to %s for user %s!',
+            'successLogin' => 'Connected to %s for user %s',
+            'fileNotExists' => 'File %s does not exist.',
+            'successUpload' => 'File %s uploaded as %s',
+            'failedUpload' => 'Failed uploading file "%s"!',
+            'successMkdir' => 'Directory %s created',
+            'failedMkdir' => 'Failed creating directory "%s"!',
+            'currentDir' => 'Current directory %s',
             'failedChangingDir' => 'Failed changing directory to %s',
-            'removeDir'         => 'Directory %s removed',
+            'removeDir' => 'Directory %s removed',
             'failedRemovingDir' => 'Failed removing directory %s',
-            'removeFile'        => 'File %s removed',
-            'failedRemovingFile'=> 'Failed removing file %s',
-            'exec'              => 'Exec: %s',
-            'failedExec'        => 'Failed to exec: %s',
-            'chmod'             => 'Change mode of file %s to %d',
-            'failedChmod'       => 'Failed changing mode of file %s to %d',
-            'passive'           => 'Switch to passive mode',
-            'active'            => 'Switch to active mode',
-            'failedMode'        => 'Failed changing mode',
-            'successRename'     => 'Rename %s to %s',
-            'failedRenaming'    => 'Failed renaming file %s to %s',
-            'successDownload'   => 'Downloaded %s to %s',
+            'removeFile' => 'File %s removed',
+            'failedRemovingFile' => 'Failed removing file %s',
+            'exec' => 'Exec: %s',
+            'failedExec' => 'Failed to exec: %s',
+            'chmod' => 'Change mode of file %s to %d',
+            'failedChmod' => 'Failed changing mode of file %s to %d',
+            'passive' => 'Switch to passive mode',
+            'active' => 'Switch to active mode',
+            'failedMode' => 'Failed changing mode',
+            'successRename' => 'Rename %s to %s',
+            'failedRenaming' => 'Failed renaming file %s to %s',
+            'successDownload' => 'Downloaded %s to %s',
             'failedDownloading' => 'Failed downloading %s',
-            'connectionClose'   => 'Connection closed',
-            'failedClosing'     => 'Failed closing connection'
+            'connectionClose' => 'Connection closed',
+            'failedClosing' => 'Failed closing connection'
         )
     );
 
     public function __construct() {
         
+    }
+
+
+    /**
+     * FTP username
+     * @param string $username 
+     */
+    public function setUsername($username) {
+        $this->username = $username;
+    }
+
+
+    /**
+     * FTP password
+     * @param string $password 
+     */
+    public function setPassword($password) {
+        $this->password = $password;
+    }
+
+
+    /**
+     * FTP IP address
+     * @param string $host 
+     */
+    public function setHost($host) {
+        $this->host = $host;
+    }
+
+
+    /**
+     * FTP server port
+     * @param int $port 
+     */
+    public function setPort($port) {
+        $this->port = $port;
+    }
+
+
+    /**
+     * Connection timeout
+     * @param int $timeout 
+     */
+    public function setTimeout($timeout) {
+        $this->timeout = $timeout;
     }
 
 
@@ -178,7 +221,6 @@ class FTPClient {
      * @return string 
      */
     protected function getLog($logName) {
-        fb::log($this->localization);
         if( isset($this->localization[$this->lang][$logName]) ) {
             return $this->localization[$this->lang][$logName];
         } elseif( isset($this->localization['eng'][$logName]) ) {
@@ -636,16 +678,17 @@ class FTPClient {
         return $this->get($remoteFile, $localFile);
     }
 
+
     /**
      * Close connection with FTP.
      * @return bool 
      */
     public function close() {
-        if( ftp_close($this->connectionHandler)) {
+        if( ftp_close($this->connectionHandler) ) {
             $this->logMessage($this->getLog('connectionClosed'));
             return true;
         }
-        
+
         $this->logMessage($this->getLog('failedClosing'), true);
         return false;
     }
