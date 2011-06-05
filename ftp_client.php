@@ -91,38 +91,40 @@ class FTPClient {
      * Language
      * @var string 
      */
-    protected $lang = 'eng';
+    public $lang = 'eng';
     /**
      * Array with log messages
      * @var array 
      */
     public $localization = array(
         'eng' => array(
-            'failedConnection' => 'FTP connection has failed!',
-            'failedLogin' => 'Failed login to %s for user %s!',
-            'successLogin' => 'Connected to %s for user %s',
-            'fileNotExists' => 'File %s does not exist.',
-            'successUpload' => 'File %s uploaded as %s',
-            'failedUpload' => 'Failed uploading file "%s"!',
-            'successMkdir' => 'Directory %s created',
-            'failedMkdir' => 'Failed creating directory "%s"!',
-            'currentDir' => 'Current directory %s',
+            'failedConnection'  => 'FTP connection has failed!',
+            'failedLogin'       => 'Failed login to %s for user %s!',
+            'successLogin'      => 'Connected to %s for user %s',
+            'fileNotExists'     => 'File %s does not exist.',
+            'successUpload'     => 'File %s uploaded as %s',
+            'failedUpload'      => 'Failed uploading file "%s"!',
+            'successMkdir'      => 'Directory %s created',
+            'failedMkdir'       => 'Failed creating directory "%s"!',
+            'currentDir'        => 'Current directory %s',
             'failedChangingDir' => 'Failed changing directory to %s',
-            'removeDir' => 'Directory %s removed',
+            'removeDir'         => 'Directory %s removed',
             'failedRemovingDir' => 'Failed removing directory %s',
-            'removeFile' => 'File %s removed',
-            'failedRemovingFile' => 'Failed removing file %s',
-            'exec' => 'Exec: %s',
-            'failedExec' => 'Failed to exec: %s',
-            'chmod' => 'Change mode of file %s to %d',
-            'failedChmod' => 'Failed changing mode of file %s to %d',
-            'passive' => 'Switch to passive mode',
-            'active' => 'Switch to active mode',
-            'failedMode' => 'Failed changing mode',
-            'successRename' => 'Rename %s to %s',
-            'failedRenaming' => 'Failed renaming file %s to %s',
-            'successDownload' => 'Downloaded %s to %s',
-            'failedDownloading' => 'Failed downloading %s'
+            'removeFile'        => 'File %s removed',
+            'failedRemovingFile'=> 'Failed removing file %s',
+            'exec'              => 'Exec: %s',
+            'failedExec'        => 'Failed to exec: %s',
+            'chmod'             => 'Change mode of file %s to %d',
+            'failedChmod'       => 'Failed changing mode of file %s to %d',
+            'passive'           => 'Switch to passive mode',
+            'active'            => 'Switch to active mode',
+            'failedMode'        => 'Failed changing mode',
+            'successRename'     => 'Rename %s to %s',
+            'failedRenaming'    => 'Failed renaming file %s to %s',
+            'successDownload'   => 'Downloaded %s to %s',
+            'failedDownloading' => 'Failed downloading %s',
+            'connectionClose'   => 'Connection closed',
+            'failedClosing'     => 'Failed closing connection'
         )
     );
 
@@ -175,7 +177,7 @@ class FTPClient {
      * @param string $logName
      * @return string 
      */
-    private function getLog($logName) {
+    protected function getLog($logName) {
         fb::log($this->localization);
         if( isset($this->localization[$this->lang][$logName]) ) {
             return $this->localization[$this->lang][$logName];
@@ -224,8 +226,8 @@ class FTPClient {
      * @param string $message
      * @param bool $isError optional
      */
-    private function logMessage($message, $isError = null) {
-        $this->messages[] = $message;
+    protected function logMessage($message, $isError = null) {
+        $this->messages[] = sprintf('%s: %s', date('Y-m-d H:i:s'), $message);
         if( $isError ) {
             $this->isError = true;
         }
@@ -338,7 +340,7 @@ class FTPClient {
      * @param string $filename
      * @return bool 
      */
-    private function isAsciiFile($filename) {
+    protected function isAsciiFile($filename) {
         $arr = explode('.', $filename);
         if( in_array(array_pop($arr), $this->asciiExtensions) ) {
             return true;
@@ -438,8 +440,6 @@ class FTPClient {
      * @return bool 
      */
     public function rmdir($directory) {
-//        if(!in_array($directory[0], array('/', '\') ) {
-
         if( ftp_rmdir($this->connectionHandler, $directory) ) {
             $this->logMessage(sprintf($this->getLog('removeDir'), $directory));
 
@@ -634,6 +634,20 @@ class FTPClient {
      */
     public function download($remoteFile, $localFile = null) {
         return $this->get($remoteFile, $localFile);
+    }
+
+    /**
+     * Close connection with FTP.
+     * @return bool 
+     */
+    public function close() {
+        if( ftp_close($this->connectionHandler)) {
+            $this->logMessage($this->getLog('connectionClosed'));
+            return true;
+        }
+        
+        $this->logMessage($this->getLog('failedClosing'), true);
+        return false;
     }
 
 }
